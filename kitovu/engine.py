@@ -19,7 +19,7 @@ class Engine():
 
     def get(self, uri, **kwargs):
         endpoint = self.hub + uri
-        r = self._get(endpoint)
+        r = self._get(endpoint, **kwargs)
         while True:
             yield r
             paging = Paging(r.headers.get('link'))
