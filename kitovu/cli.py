@@ -1,4 +1,5 @@
 import json
+import sys
 import click
 from .engine import Engine
 
@@ -41,3 +42,27 @@ def get(api, page, per_page, minimal, bulk, uri):
                 click.echo([item.get('name') for item in page.json()])
             else:
                 click.echo(page.json())
+
+
+@cli.command()
+@click.pass_obj
+@click.argument('uri')
+def put(api, uri):
+    ''' perform an HTTP PUT on the given URI '''
+    if sys.stdin.isatty():
+        r = api.put(uri)
+    else:
+        r = api.put(uri, json=json.load(sys.stdin))
+    click.echo(r.text)
+
+
+@cli.command()
+@click.pass_obj
+@click.argument('uri')
+def delete(api, uri):
+    ''' perform an HTTP DELETE on the given URI '''
+    if sys.stdin.isatty():
+        r = api.delete(uri)
+    else:
+        r = api.delete(uri, json=json.load(sys.stdin))
+    click.echo(r.text)

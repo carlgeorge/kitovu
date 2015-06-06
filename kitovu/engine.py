@@ -17,6 +17,18 @@ class Engine():
             raise ApiError(r.text)
         return r
 
+    def _put(self, url, **kwargs):
+        r = requests.put(url, headers=self.headers, **kwargs)
+        if not r.ok:
+            raise ApiError(r.text)
+        return r
+
+    def _delete(self, url, **kwargs):
+        r = requests.delete(url, headers=self.headers, **kwargs)
+        if not r.ok:
+            raise ApiError(r.text)
+        return r
+
     def get(self, uri, **kwargs):
         endpoint = self.hub + uri
         r = self._get(endpoint, **kwargs)
@@ -27,3 +39,11 @@ class Engine():
                 r = self._get(paging.next_link)
             else:
                 break
+
+    def put(self, uri, **kwargs):
+        endpoint = self.hub + uri
+        return self._put(endpoint, **kwargs)
+
+    def delete(self, uri, **kwargs):
+        endpoint = self.hub + uri
+        return self._delete(endpoint, **kwargs)
