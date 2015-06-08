@@ -14,12 +14,16 @@ class Api():
     def _call(self, verb, url, **kwargs):
         if verb == 'get':
             r = requests.get(url, headers=self.headers, **kwargs)
+        elif verb == 'head':
+            r = requests.head(url, headers=self.headers, **kwargs)
         elif verb == 'put':
             r = requests.put(url, headers=self.headers, **kwargs)
         elif verb == 'post':
             r = requests.post(url, headers=self.headers, **kwargs)
         elif verb == 'delete':
             r = requests.delete(url, headers=self.headers, **kwargs)
+        elif verb == 'patch':
+            r = requests.patch(url, headers=self.headers, **kwargs)
         else:
             msg = 'the verb {} has not yet been implemented'
             raise SystemExit(msg.format(verb))
