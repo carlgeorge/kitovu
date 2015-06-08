@@ -39,9 +39,10 @@ def get(api, page, per_page, summary, bulk, uri):
     else:
         for page in api.get(uri):
             if summary:
-                click.echo([item.get('name') for item in page.json()])
+                data = [item.get('name') for item in page.json()]
             else:
-                click.echo(page.json())
+                data = page.json()
+            click.echo(json.dumps(data, sort_keys=True))
 
 
 @cli.command()
