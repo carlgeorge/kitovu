@@ -14,11 +14,12 @@ def cli(context, profile):
 
 @cli.command()
 @click.pass_obj
-@click.option('--page', type=int)
-@click.option('--per-page', type=int)
+@click.option('--page', type=int, help='define the starting page')
+@click.option('--per-page', type=int, help='define the items per page')
 @click.option('--summary', '-s', is_flag=True,
               help='only output the the "name" property of each item')
-@click.option('--bulk', '-b', is_flag=True)
+@click.option('--bulk', '-b', is_flag=True,
+              help='group all results together into one list')
 @click.argument('uri')
 def get(api, page, per_page, summary, bulk, uri):
     ''' perform an HTTP GET on the given URI '''
