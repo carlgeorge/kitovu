@@ -1,7 +1,7 @@
 import json
 import sys
 import click
-from .engine import Engine
+from .api import Api
 
 
 @click.group()
@@ -9,7 +9,7 @@ from .engine import Engine
 @click.pass_context
 def cli(context, profile):
     ''' flexible GitHub API interface '''
-    context.obj = Engine(profile)
+    context.obj = Api(profile)
 
 
 @cli.command()

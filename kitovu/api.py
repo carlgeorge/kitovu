@@ -4,7 +4,7 @@ from .utils import Paging
 from .errors import ApiError
 
 
-class Engine():
+class Api():
     def __init__(self, profile):
         self.profile = profile
         self.hub, self.user, self.token = parse_config(profile)
