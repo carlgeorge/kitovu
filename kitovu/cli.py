@@ -31,12 +31,10 @@ def get(api, page, per_page, summary, bulk, uri):
             params.append('per_page={}'.format(per_page))
         uri = '{}?{}'.format(uri, '&'.join(params))
     if bulk:
-        data = []
-        for page in api.get(uri):
-            if summary:
-                data.extend([item.get('name') for item in page.json()])
-            else:
-                data.extend(page.json())
+        if summary:
+            data = [item['name'] for page in api.get(uri) for item in page.json()]
+        else:
+            data = [item for page in api.get(uri) for item in page.json()]
         click.echo(json.dumps(data, sort_keys=True))
     else:
         for page in api.get(uri):
