@@ -16,10 +16,11 @@ def cli(context, profile):
 @click.pass_obj
 @click.option('--page', type=int)
 @click.option('--per-page', type=int)
-@click.option('--minimal', '-m', is_flag=True)
+@click.option('--summary', '-s', is_flag=True,
+              help='only output the the "name" property of each item')
 @click.option('--bulk', '-b', is_flag=True)
 @click.argument('uri')
-def get(api, page, per_page, minimal, bulk, uri):
+def get(api, page, per_page, summary, bulk, uri):
     ''' perform an HTTP GET on the given URI '''
     if page or per_page:
         params = []
@@ -31,14 +32,14 @@ def get(api, page, per_page, minimal, bulk, uri):
     if bulk:
         data = []
         for page in api.get(uri):
-            if minimal:
+            if summary:
                 data.extend([item.get('name') for item in page.json()])
             else:
                 data.extend(page.json())
         click.echo(json.dumps(data, sort_keys=True))
     else:
         for page in api.get(uri):
-            if minimal:
+            if summary:
                 click.echo([item.get('name') for item in page.json()])
             else:
                 click.echo(page.json())
