@@ -2,11 +2,6 @@ import setuptools
 import sys
 
 
-requirements = ['requests', 'click', 'PyYAML']
-
-if sys.version_info[:2] < (3, 4):
-    requirements.append('pathlib')
-
 setuptools.setup(
     name='kitovu',
     version='0.1',
@@ -15,7 +10,12 @@ setuptools.setup(
     author_email='carl.george@rackspace.com',
     url='https://github.com/carlgeorge/kitovu',
     packages=['kitovu'],
-    install_requires=requirements,
+    install_requires=[
+        'appdirs',
+        'click',
+        'PyYAML',
+        'requests'
+    ],
     entry_points={'console_scripts': ['kitovu=kitovu:cli']},
     classifiers=[
         'Environment :: Console',

@@ -1,11 +1,11 @@
 import yaml
-from .xdg import get_config_path
+import appdirs
 
 
 def parse_config(profile):
-    config_path = get_config_path(__package__)
-    profile_path = (config_path / profile).with_suffix('.yaml')
-    data = safe_yaml_load(profile_path)
+    config_dir = appdirs.user_config_dir(__package__)
+    profile_file = '{}/{}.yaml'.format(config_dir, profile)
+    data = safe_yaml_load(profile_file)
     hub = data.get('hub', 'https://api.github.com')
     user = safe_key_retrieve('user', data)
     token = safe_key_retrieve('token', data)
@@ -13,11 +13,11 @@ def parse_config(profile):
 
 
 def safe_yaml_load(path):
-    with path.open() as f:
+    with open(path) as f:
         try:
             return yaml.load(f.read())
         except yaml.YAMLError:
-            raise SystemExit('error parsing {}'.format(config_file))
+            raise SystemExit('error parsing {}'.format(path))
 
 
 def safe_key_retrieve(want, data):
