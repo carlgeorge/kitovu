@@ -1,7 +1,7 @@
 import requests
 from .config import parse_config
 from .utils import Paging
-from .errors import ApiError
+from .errors import KitovuError
 
 
 class Api():
@@ -28,7 +28,7 @@ class Api():
             msg = 'the verb {} has not yet been implemented'
             raise SystemExit(msg.format(verb))
         if not r.ok:
-            raise ApiError(r.text)
+            raise KitovuError(r.text)
         return r
 
     def get(self, uri, **kwargs):
