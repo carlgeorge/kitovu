@@ -14,35 +14,39 @@ def cli(context, profile):
 
 @cli.command()
 @click.pass_obj
-@click.option('--page', type=int, help='define the starting page')
-@click.option('--per-page', type=int, help='define the items per page')
+@click.option('--page-number', '-p', type=int, help='define the starting page')
+@click.option('--per-page', '-P', type=int, help='define the items per page')
+@click.option('--all-pages', '-a', is_flag=True,
+              help='get results from all pages')
 @click.option('--summary', '-s', is_flag=True,
-              help='only output the the "name" property of each item')
-@click.option('--bulk', '-b', is_flag=True,
-              help='group all results together into one list')
+              help='only output the "name" property of each item')
 @click.argument('uri')
-def get(api, page, per_page, summary, bulk, uri):
+def get(api, page_number, per_page, all_pages, summary, uri):
     ''' perform an HTTP GET on the given URI '''
-    if page or per_page:
+    # setup the query parameters
+    if page_number or per_page:
         params = []
-        if page:
-            params.append('page={}'.format(page))
+        if page_number:
+            params.append('page={}'.format(page_number))
         if per_page:
             params.append('per_page={}'.format(per_page))
         uri = '{}?{}'.format(uri, '&'.join(params))
-    if bulk:
-        if summary:
-            data = [item['name'] for page in api.get(uri) for item in page.json()]
-        else:
-            data = [item for page in api.get(uri) for item in page.json()]
-        click.echo(json.dumps(data, sort_keys=True))
+    # make the call
+    if all_pages:
+        data = []
+        for response in api.get_all(uri):
+            for item in response.json():
+                if summary:
+                    data.append(item['name'])
+                else:
+                    data.append(item)
     else:
-        for page in api.get(uri):
-            if summary:
-                data = [item.get('name') for item in page.json()]
-            else:
-                data = page.json()
-            click.echo(json.dumps(data, sort_keys=True))
+        response = api.get(uri)
+        if summary:
+            data = [item['name'] for item in response.json()]
+        else:
+            data = response.json()
+    click.echo(json.dumps(data, sort_keys=True))
 
 
 @cli.command()
