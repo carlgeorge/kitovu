@@ -11,41 +11,38 @@ class Api():
         self.headers = {'Accept': 'application/vnd.github.v3+json',
                         'Authorization': 'token {}'.format(self.token)}
 
-    def _call(self, verb, url, **kwargs):
-        if verb == 'get':
-            r = requests.get(url, headers=self.headers, **kwargs)
-        elif verb == 'head':
-            r = requests.head(url, headers=self.headers, **kwargs)
-        elif verb == 'put':
-            r = requests.put(url, headers=self.headers, **kwargs)
-        elif verb == 'post':
-            r = requests.post(url, headers=self.headers, **kwargs)
-        elif verb == 'delete':
-            r = requests.delete(url, headers=self.headers, **kwargs)
-        elif verb == 'patch':
-            r = requests.patch(url, headers=self.headers, **kwargs)
-        else:
-            msg = 'the verb {} has not yet been implemented'
-            raise SystemExit(msg.format(verb))
-        if not r.ok:
-            raise KitovuError(r.text)
-        return r
+    def check(self, response):
+        if not response.ok:
+            raise KitovuError(response.text)
+        return response
 
     def get(self, uri, **kwargs):
         endpoint = self.hub + uri
-        r = self._call('get', endpoint, **kwargs)
+        kwargs['headers'] = self.headers
+        return self.check(requests.get(endpoint, **kwargs))
+
+    def get_all(self, uri, **kwargs):
+        r = self.get(uri, **kwargs)
         while True:
             yield r
             paging = Paging(r.headers.get('link'))
             if paging.next_link:
-                r = self._call('get', paging.next_link)
+                r = self.check(requests.get(paging.next_link, **kwargs))
             else:
                 break
 
+    def post(self, uri, payload, **kwargs):
+        endpoint = self.hub + uri
+        kwargs['headers'] = self.headers
+        kwargs['json'] = payload
+        return self.check(requests.post(endpoint, headers=self.headers, **kwargs))
+
     def put(self, uri, **kwargs):
         endpoint = self.hub + uri
-        return self._call('put', endpoint, **kwargs)
+        kwargs['headers'] = self.headers
+        return self.check(requests.put(endpoint, headers=self.headers, **kwargs))
 
     def delete(self, uri, **kwargs):
         endpoint = self.hub + uri
-        return self._call('delete', endpoint, **kwargs)
+        kwargs['headers'] = self.headers
+        return self.check(requests.delete(endpoint, headers=self.headers, **kwargs))
