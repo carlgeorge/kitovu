@@ -35,14 +35,14 @@ class Api():
         endpoint = self.hub + uri
         kwargs['headers'] = self.headers
         kwargs['json'] = payload
-        return self.check(requests.post(endpoint, headers=self.headers, **kwargs))
+        return self.check(requests.post(endpoint, **kwargs))
 
     def put(self, uri, **kwargs):
         endpoint = self.hub + uri
         kwargs['headers'] = self.headers
-        return self.check(requests.put(endpoint, headers=self.headers, **kwargs))
+        return self.check(requests.put(endpoint, **kwargs))
 
     def delete(self, uri, **kwargs):
         endpoint = self.hub + uri
         kwargs['headers'] = self.headers
-        return self.check(requests.delete(endpoint, headers=self.headers, **kwargs))
+        return self.check(requests.delete(endpoint, **kwargs))
