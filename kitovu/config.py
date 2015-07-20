@@ -8,9 +8,8 @@ def parse_config(profile):
     profile_file = '{}/{}.yaml'.format(config_dir, profile)
     data = safe_yaml_load(profile_file)
     hub = data.get('hub', 'https://api.github.com')
-    user = safe_key_retrieve('user', data)
     token = safe_key_retrieve('token', data)
-    return hub, user, token
+    return hub, token
 
 
 def safe_yaml_load(path):

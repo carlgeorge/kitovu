@@ -7,7 +7,7 @@ from .errors import KitovuError
 class Api():
     def __init__(self, profile):
         self.profile = profile
-        self.hub, self.user, self.token = parse_config(profile)
+        self.hub, self.token = parse_config(profile)
         self.headers = {'Accept': 'application/vnd.github.v3+json',
                         'Authorization': 'token {}'.format(self.token)}
 
