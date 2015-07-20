@@ -1,5 +1,6 @@
 import yaml
 import appdirs
+from .errors import ConfigError
 
 
 def parse_config(profile):
@@ -17,12 +18,11 @@ def safe_yaml_load(path):
         try:
             return yaml.load(f.read())
         except yaml.YAMLError:
-            raise SystemExit('error parsing {}'.format(path))
+            raise ConfigError('error parsing {}'.format(path))
 
 
 def safe_key_retrieve(want, data):
     try:
         return data[want]
     except KeyError:
-        msg = 'missing required config parameter "{}"'
-        raise SystemExit(msg.format(want))
+        raise ConfigError('missing config parameter "{}"'.format(want))
