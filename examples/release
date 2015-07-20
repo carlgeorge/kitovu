@@ -16,7 +16,7 @@ default_timestamp = datetime.date.isoformat(datetime.date.today())
 @click.group()
 @click.pass_context
 def cli(ctx):
-    ctx.obj = kitovu.Api('public')
+    ctx.obj = kitovu.Api(profile='public')
 
 
 @click.command()
