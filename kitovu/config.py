@@ -1,9 +1,12 @@
 import yaml
-import appdirs
-from .errors import ConfigError
+from .errors import KitovuError, ConfigError
 
 
 def load_profile(profile):
+    try:
+        import appdirs
+    except ImportError:
+        raise KitovuError('failed to import appdirs module')
     config_dir = appdirs.user_config_dir(__package__)
     config = '{}/{}.yaml'.format(config_dir, profile)
     return load_config(config)

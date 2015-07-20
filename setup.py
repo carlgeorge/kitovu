@@ -11,11 +11,13 @@ setuptools.setup(
     url='https://github.com/carlgeorge/kitovu',
     packages=['kitovu'],
     install_requires=[
-        'appdirs',
         'click',
         'PyYAML',
         'requests'
     ],
+    extras_require={
+        'profiles': ['appdirs']
+    }
     entry_points={'console_scripts': ['kitovu=kitovu:cli']},
     classifiers=[
         'Environment :: Console',
