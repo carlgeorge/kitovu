@@ -6,19 +6,23 @@ from .errors import KitovuError
 
 class Api():
     def __init__(self, profile=None, config=None):
-        if profile:
+        if profile and config:
+            raise KitovuError('use either profile or config, not both')
+        elif profile:
             self.hub, self.token = load_profile(profile)
         elif config:
             self.hub, self.token = load_config(config)
         else:
-            raise KitovuError('requires either a profile name or a path to a '
-                              'config file')
-        self.headers = {'Accept': 'application/vnd.github.v3+json',
-                        'Authorization': 'token {}'.format(self.token)}
+            self.hub, self.token = None, None
+        if self.hub is None:
+            self.hub = 'https://api.github.com'
+        self.headers = {'Accept': 'application/vnd.github.v3+json'}
+        if self.token:
+            self.headers['Authorization'] = 'token {}'.format(self.token)
 
     def check(self, response):
         if not response.ok:
-            raise KitovuError(response.text)
+            raise KitovuError(response.json()['message'])
         return response
 
     def get(self, uri, **kwargs):

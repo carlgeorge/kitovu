@@ -14,8 +14,8 @@ def load_profile(profile):
 
 def load_config(config):
     data = safe_yaml_load(config)
-    hub = data.get('hub', 'https://api.github.com')
-    token = safe_key_retrieve('token', data)
+    hub = data.get('hub')
+    token = data.get('token')
     return hub, token
 
 
@@ -28,10 +28,3 @@ def safe_yaml_load(path):
                 raise ConfigError('{}: yaml error'.format(path))
     except FileNotFoundError:
         raise ConfigError('{}: file does not exist'.format(path))
-
-
-def safe_key_retrieve(want, data):
-    try:
-        return data[want]
-    except KeyError:
-        raise ConfigError('missing config parameter "{}"'.format(want))
