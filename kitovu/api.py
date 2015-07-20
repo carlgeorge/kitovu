@@ -1,13 +1,18 @@
 import requests
-from .config import parse_config
+from .config import load_profile, load_config
 from .utils import Paging
 from .errors import KitovuError
 
 
 class Api():
-    def __init__(self, profile):
-        self.profile = profile
-        self.hub, self.token = parse_config(profile)
+    def __init__(self, profile=None, config=None):
+        if profile:
+            self.hub, self.token = load_profile(profile)
+        elif config:
+            self.hub, self.token = load_config(config)
+        else:
+            raise KitovuError('requires either a profile name or a path to a '
+                              'config file')
         self.headers = {'Accept': 'application/vnd.github.v3+json',
                         'Authorization': 'token {}'.format(self.token)}
 

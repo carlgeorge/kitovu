@@ -9,7 +9,7 @@ from .api import Api
 @click.pass_context
 def cli(context, profile):
     ''' flexible GitHub API interface '''
-    context.obj = Api(profile)
+    context.obj = Api(profile=profile)
 
 
 @cli.command()

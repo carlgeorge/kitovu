@@ -3,10 +3,14 @@ import appdirs
 from .errors import ConfigError
 
 
-def parse_config(profile):
+def load_profile(profile):
     config_dir = appdirs.user_config_dir(__package__)
-    profile_file = '{}/{}.yaml'.format(config_dir, profile)
-    data = safe_yaml_load(profile_file)
+    config = '{}/{}.yaml'.format(config_dir, profile)
+    return load_config(config)
+
+
+def load_config(config):
+    data = safe_yaml_load(config)
     hub = data.get('hub', 'https://api.github.com')
     token = safe_key_retrieve('token', data)
     return hub, token
