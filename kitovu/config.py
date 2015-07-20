@@ -17,11 +17,14 @@ def load_config(config):
 
 
 def safe_yaml_load(path):
-    with open(path) as f:
-        try:
-            return yaml.load(f.read())
-        except yaml.YAMLError:
-            raise ConfigError('error parsing {}'.format(path))
+    try:
+        with open(path) as f:
+            try:
+                return yaml.load(f.read())
+            except yaml.YAMLError:
+                raise ConfigError('{}: yaml error'.format(path))
+    except FileNotFoundError:
+        raise ConfigError('{}: file does not exist'.format(path))
 
 
 def safe_key_retrieve(want, data):
