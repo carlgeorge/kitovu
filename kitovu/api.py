@@ -32,7 +32,8 @@ class Api():
             yield r
             paging = Paging(r.headers.get('link'))
             if paging.next_link:
-                r = self.check(requests.get(paging.next_link, **kwargs))
+                r = self.check(requests.get(paging.next_link,
+                                            headers=self.headers))
             else:
                 break
 
