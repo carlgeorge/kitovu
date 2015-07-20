@@ -5,11 +5,18 @@ from .api import Api
 
 
 @click.group()
+@click.option('--no-auth', '-n', is_flag=True)
+@click.option('--config', '-c')
 @click.option('--profile', '-p', default='default')
 @click.pass_context
-def cli(context, profile):
+def cli(context, no_auth, profile, config):
     ''' flexible GitHub API interface '''
-    context.obj = Api(profile=profile)
+    if no_auth:
+        context.obj = Api()
+    elif config:
+        context.obj = Api(config=config)
+    else:
+        context.obj = Api(profile=profile)
 
 
 @cli.command()
