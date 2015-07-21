@@ -4,7 +4,6 @@
 # RPM packages are published to the testing and stable repositories.
 
 
-import sys
 import datetime
 import click
 import kitovu
@@ -16,7 +15,10 @@ default_timestamp = datetime.date.isoformat(datetime.date.today())
 @click.group()
 @click.pass_context
 def cli(ctx):
-    ctx.obj = kitovu.Api(profile='public')
+    try:
+        ctx.obj = kitovu.Api(profile='public')
+    except kitovu.errors.MissingConfigError:
+        raise SystemExit('no profile "public" found')
 
 
 @click.command()

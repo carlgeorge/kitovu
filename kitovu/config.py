@@ -1,5 +1,5 @@
 import yaml
-from .errors import KitovuError, ConfigError
+from .errors import KitovuError, ConfigError, MissingConfigError
 
 
 def load_profile(profile):
@@ -27,4 +27,4 @@ def safe_yaml_load(path):
             except yaml.YAMLError:
                 raise ConfigError('{}: yaml error'.format(path))
     except FileNotFoundError:
-        raise ConfigError('{}: file does not exist'.format(path))
+        raise MissingConfigError('{}: file does not exist'.format(path))

@@ -4,3 +4,7 @@ class KitovuError(Exception):
 
 class ConfigError(KitovuError):
     pass
+
+
+class MissingConfigError(ConfigError):
+    pass
