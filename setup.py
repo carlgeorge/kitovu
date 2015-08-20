@@ -17,7 +17,7 @@ setuptools.setup(
     ],
     extras_require={
         'profiles': ['appdirs']
-    }
+    },
     entry_points={'console_scripts': ['kitovu=kitovu:cli']},
     classifiers=[
         'Environment :: Console',
