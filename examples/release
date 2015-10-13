@@ -30,7 +30,7 @@ def cli(ctx):
 @click.option('-d', '--debug', is_flag=True)
 def testing(api, package, tag, organization, timestamp, debug):
     body = 'testing: {}'.format(timestamp)
-    payload = {'tag_name': tag, 'body': body, 'prerelease': True}
+    payload = {'tag_name': tag, 'name': tag, 'body': body, 'prerelease': True}
     uri = '/repos/{}/{}/releases'.format(organization, package)
     if debug:
         click.echo('creating new testing release')
@@ -62,7 +62,7 @@ def stable(api, package, tag, organization, timestamp, debug):
     api.delete(uri)
     # create new stable release
     body = '{}\nstable: {}'.format(old_body, timestamp)
-    payload = {'tag_name': tag, 'body': body}
+    payload = {'tag_name': tag, 'name': tag, 'body': body}
     uri = '/repos/{}/{}/releases'.format(organization, package)
     if debug:
         click.echo('create new stable release')
