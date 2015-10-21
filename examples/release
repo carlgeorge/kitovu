@@ -15,6 +15,7 @@ default_timestamp = datetime.date.isoformat(datetime.date.today())
 @click.group()
 @click.pass_context
 def cli(ctx):
+    '''Release management tool.'''
     try:
         ctx.obj = kitovu.Api(profile='public')
     except kitovu.errors.MissingConfigError:
@@ -66,6 +67,8 @@ def show(api, package, tag, organization, debug):
 @click.option('-t', '--timestamp', default=default_timestamp)
 @click.option('-d', '--debug', is_flag=True)
 def testing(api, package, tag, organization, timestamp, debug):
+    '''Create a testing release.'''
+    # POST /repos/:owner/:repo/releases
     body = 'testing: {}'.format(timestamp)
     payload = {'tag_name': tag, 'name': tag, 'body': body, 'prerelease': True}
     uri = '/repos/{}/{}/releases'.format(organization, package)
@@ -84,7 +87,9 @@ def testing(api, package, tag, organization, timestamp, debug):
 @click.option('-t', '--timestamp', default=default_timestamp)
 @click.option('-d', '--debug', is_flag=True)
 def stable(api, package, tag, organization, timestamp, debug):
+    '''Create a stable release.'''
     # get current testing release
+    # GET /repos/:owner/:repo/releases/tags/:tag
     uri = '/repos/{}/{}/releases/tags/{}'.format(organization, package, tag)
     if debug:
         click.echo('getting current testing release')
@@ -94,12 +99,14 @@ def stable(api, package, tag, organization, timestamp, debug):
     old_body = data['body']
     old_id = data['id']
     # delete current testing release
+    # DELETE /repos/:owner/:repo/releases/:id
     uri = '/repos/{}/{}/releases/{}'.format(organization, package, old_id)
     if debug:
         click.echo('deleting current testing release')
         click.echo(uri)
     api.delete(uri)
     # create new stable release
+    # POST /repos/:owner/:repo/releases
     body = '{}\nstable: {}'.format(old_body, timestamp)
     payload = {'tag_name': tag, 'name': tag, 'body': body}
     uri = '/repos/{}/{}/releases'.format(organization, package)
