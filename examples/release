@@ -89,6 +89,8 @@ def stable(api, package, tag, organization, timestamp, debug):
     if debug:
         click.echo('getting current testing release')
     data = api.get(uri).json()
+    if not data['prerelease']:
+        raise SystemExit('The current release is already marked "stable".')
     old_body = data['body']
     old_id = data['id']
     # delete current testing release
