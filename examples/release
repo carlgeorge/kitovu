@@ -43,6 +43,26 @@ def list(api, package, organization, debug):
 @click.argument('package')
 @click.argument('tag')
 @click.option('-o', '--organization', default='iuscommunity-pkg')
+@click.option('-d', '--debug', is_flag=True)
+def show(api, package, tag, organization, debug):
+    '''Display details for a release.'''
+    # GET /repos/:owner/:repo/releases/tags/:tag
+    uri = '/repos/{}/{}/releases/tags/{}'.format(organization, package, tag)
+    if debug:
+        click.echo('getting release')
+    data = api.get(uri).json()
+    #status = 'testing' if data['prerelease'] else 'stable'
+    #click.echo('{} in {}'.format(data['tag_name'], status))
+    click.echo('name: {}'.format(data['tag_name']))
+    click.echo('prerelease: {}'.format(data['prerelease']))
+    click.echo(data['body'])
+
+
+@click.command()
+@click.pass_obj
+@click.argument('package')
+@click.argument('tag')
+@click.option('-o', '--organization', default='iuscommunity-pkg')
 @click.option('-t', '--timestamp', default=default_timestamp)
 @click.option('-d', '--debug', is_flag=True)
 def testing(api, package, tag, organization, timestamp, debug):
@@ -89,6 +109,7 @@ def stable(api, package, tag, organization, timestamp, debug):
 
 
 cli.add_command(list)
+cli.add_command(show)
 cli.add_command(testing)
 cli.add_command(stable)
 
