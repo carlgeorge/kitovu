@@ -68,8 +68,7 @@ def stable(api, package, tag, organization, timestamp, debug):
         click.echo('create new stable release')
         click.echo(uri)
         click.echo(payload)
-    else:
-        api.post(uri, payload)
+    api.post(uri, payload)
 
 
 cli.add_command(testing)
