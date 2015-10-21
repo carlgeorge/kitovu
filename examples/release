@@ -24,6 +24,23 @@ def cli(ctx):
 @click.command()
 @click.pass_obj
 @click.argument('package')
+@click.option('-o', '--organization', default='iuscommunity-pkg')
+@click.option('-d', '--debug', is_flag=True)
+def list(api, package, organization, debug):
+    '''List releases for a package.'''
+    # GET /repos/:owner/:repo/releases
+    uri = '/repos/{}/{}/releases'.format(organization, package)
+    if debug:
+        click.echo('getting releases')
+    releases = api.get(uri).json()[0:3]
+    for release in releases:
+        status = 'testing' if release['prerelease'] else 'stable'
+        click.echo('{} {}'.format(release['tag_name'], status))
+
+
+@click.command()
+@click.pass_obj
+@click.argument('package')
 @click.argument('tag')
 @click.option('-o', '--organization', default='iuscommunity-pkg')
 @click.option('-t', '--timestamp', default=default_timestamp)
@@ -71,6 +88,7 @@ def stable(api, package, tag, organization, timestamp, debug):
     api.post(uri, payload)
 
 
+cli.add_command(list)
 cli.add_command(testing)
 cli.add_command(stable)
 
