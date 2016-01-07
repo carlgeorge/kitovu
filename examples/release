@@ -5,11 +5,14 @@
 
 
 import datetime
+import pathlib
+
 import click
 import kitovu
 
 
 default_timestamp = datetime.date.isoformat(datetime.date.today())
+default_package = pathlib.Path.cwd().name
 
 
 @click.group()
@@ -24,7 +27,7 @@ def cli(ctx):
 
 @click.command()
 @click.pass_obj
-@click.argument('package')
+@click.option('-p', '--package', default=default_package)
 @click.option('-o', '--organization', default='iuscommunity-pkg')
 @click.option('-d', '--debug', is_flag=True)
 def list(api, package, organization, debug):
@@ -41,11 +44,11 @@ def list(api, package, organization, debug):
 
 @click.command()
 @click.pass_obj
-@click.argument('package')
 @click.argument('tag')
+@click.option('-p', '--package', default=default_package)
 @click.option('-o', '--organization', default='iuscommunity-pkg')
 @click.option('-d', '--debug', is_flag=True)
-def show(api, package, tag, organization, debug):
+def show(api, tag, package, organization, debug):
     '''Display details for a release.'''
     # GET /repos/:owner/:repo/releases/tags/:tag
     uri = '/repos/{}/{}/releases/tags/{}'.format(organization, package, tag)
@@ -61,12 +64,12 @@ def show(api, package, tag, organization, debug):
 
 @click.command()
 @click.pass_obj
-@click.argument('package')
 @click.argument('tag')
+@click.option('-p', '--package', default=default_package)
 @click.option('-o', '--organization', default='iuscommunity-pkg')
 @click.option('-t', '--timestamp', default=default_timestamp)
 @click.option('-d', '--debug', is_flag=True)
-def testing(api, package, tag, organization, timestamp, debug):
+def testing(api, tag, package, organization, timestamp, debug):
     '''Create a testing release.'''
     # POST /repos/:owner/:repo/releases
     body = 'testing: {}'.format(timestamp)
@@ -81,12 +84,12 @@ def testing(api, package, tag, organization, timestamp, debug):
 
 @click.command()
 @click.pass_obj
-@click.argument('package')
 @click.argument('tag')
+@click.option('-p', '--package', default=default_package)
 @click.option('-o', '--organization', default='iuscommunity-pkg')
 @click.option('-t', '--timestamp', default=default_timestamp)
 @click.option('-d', '--debug', is_flag=True)
-def stable(api, package, tag, organization, timestamp, debug):
+def stable(api, tag, package, organization, timestamp, debug):
     '''Create a stable release.'''
     # get current testing release
     # GET /repos/:owner/:repo/releases/tags/:tag
