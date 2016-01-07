@@ -35,7 +35,7 @@ def list(api, package, organization, debug):
     # GET /repos/:owner/:repo/releases
     uri = '/repos/{}/{}/releases'.format(organization, package)
     if debug:
-        click.echo('getting releases')
+        click.echo('GET {}'.format(uri))
     releases = api.get(uri).json()[0:3]
     for release in releases:
         status = 'testing' if release['prerelease'] else 'stable'
@@ -53,7 +53,7 @@ def show(api, tag, package, organization, debug):
     # GET /repos/:owner/:repo/releases/tags/:tag
     uri = '/repos/{}/{}/releases/tags/{}'.format(organization, package, tag)
     if debug:
-        click.echo('getting release')
+        click.echo('GET {}'.format(uri))
     data = api.get(uri).json()
     #status = 'testing' if data['prerelease'] else 'stable'
     #click.echo('{} in {}'.format(data['tag_name'], status))
@@ -76,8 +76,7 @@ def testing(api, tag, package, organization, timestamp, debug):
     payload = {'tag_name': tag, 'name': tag, 'body': body, 'prerelease': True}
     uri = '/repos/{}/{}/releases'.format(organization, package)
     if debug:
-        click.echo('creating new testing release')
-        click.echo(uri)
+        click.echo('POST {}'.format(uri))
         click.echo(payload)
     api.post(uri, payload)
 
@@ -95,7 +94,7 @@ def stable(api, tag, package, organization, timestamp, debug):
     # GET /repos/:owner/:repo/releases/tags/:tag
     uri = '/repos/{}/{}/releases/tags/{}'.format(organization, package, tag)
     if debug:
-        click.echo('getting current testing release')
+        click.echo('GET {}'.format(uri))
     data = api.get(uri).json()
     if not data['prerelease']:
         raise SystemExit('The current release is already marked "stable".')
@@ -105,8 +104,7 @@ def stable(api, tag, package, organization, timestamp, debug):
     # DELETE /repos/:owner/:repo/releases/:id
     uri = '/repos/{}/{}/releases/{}'.format(organization, package, old_id)
     if debug:
-        click.echo('deleting current testing release')
-        click.echo(uri)
+        click.echo('DELETE {}'.format(uri))
     api.delete(uri)
     # create new stable release
     # POST /repos/:owner/:repo/releases
@@ -114,8 +112,7 @@ def stable(api, tag, package, organization, timestamp, debug):
     payload = {'tag_name': tag, 'name': tag, 'body': body}
     uri = '/repos/{}/{}/releases'.format(organization, package)
     if debug:
-        click.echo('create new stable release')
-        click.echo(uri)
+        click.echo('POST {}'.format(uri))
         click.echo(payload)
     api.post(uri, payload)
 
