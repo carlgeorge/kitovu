@@ -1,13 +1,12 @@
 import requests
 from .config import load_profile, load_config
 from .utils import Paging
-from .errors import KitovuError
 
 
 class Api():
     def __init__(self, profile=None, config=None):
         if profile and config:
-            raise KitovuError('use either profile or config, not both')
+            raise SystemExit('use either profile or config, not both')
         elif profile:
             self.hub, self.token = load_profile(profile)
         elif config:
@@ -22,7 +21,7 @@ class Api():
 
     def check(self, response):
         if not response.ok:
-            raise KitovuError(response.json()['message'])
+            raise SystemExit(response.json()['message'])
         return response
 
     def get(self, uri, **kwargs):

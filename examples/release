@@ -15,18 +15,11 @@ default_timestamp = datetime.date.isoformat(datetime.date.today())
 default_package = pathlib.Path.cwd().name
 
 
-class Ignore(Exception):
-    'An exception class that is never raised.'
-
-
 @click.group()
 @click.pass_context
 def cli(ctx):
     '''Release management tool.'''
-    try:
-        ctx.obj = kitovu.Api(profile='public')
-    except kitovu.errors.MissingConfigError:
-        raise SystemExit('no profile "public" found')
+    ctx.obj = kitovu.Api(profile='public')
 
 
 @click.command()
@@ -45,9 +38,11 @@ def list(api, package, organization, debug):
         for release in releases:
             status = 'testing' if release['prerelease'] else 'stable'
             click.echo('{} {}'.format(release['tag_name'], status))
-    # If debug, ignore this catch and print the full stack trace.
-    except (Ignore if debug else kitovu.errors.KitovuError):
-        raise SystemExit('unable to get releases for "{}" package'.format(package))
+    except Exception:
+        if debug:
+            raise
+        else:
+            raise SystemExit('unable to get releases for "{}" package'.format(package))
 
 
 @click.command()
@@ -67,9 +62,11 @@ def show(api, tag, package, organization, debug):
         click.echo('name: {}'.format(data['tag_name']))
         click.echo('prerelease: {}'.format(data['prerelease']))
         click.echo(data['body'])
-    # If debug, ignore this catch and print the full stack trace.
-    except (Ignore if debug else kitovu.errors.KitovuError):
-        raise SystemExit('unable to get release "{}" for "{}" package'.format(tag, package))
+    except Exception:
+        if debug:
+            raise
+        else:
+            raise SystemExit('unable to get release "{}" for "{}" package'.format(tag, package))
 
 
 @click.command()
@@ -90,8 +87,11 @@ def testing(api, tag, package, organization, timestamp, debug):
             click.echo('POST {}'.format(uri))
             click.echo(payload)
         api.post(uri, payload)
-    except (Ignore if debug else kitovu.errors.KitovuError):
-        raise SystemExit('unable to create release "{}" for "{}" package'.format(tag, package))
+    except Exception:
+        if debug:
+            raise
+        else:
+            raise SystemExit('unable to create release "{}" for "{}" package'.format(tag, package))
 
 
 @click.command()
@@ -129,9 +129,11 @@ def stable(api, tag, package, organization, timestamp, debug):
             click.echo('POST {}'.format(uri))
             click.echo(payload)
         api.post(uri, payload)
-    # If debug, ignore this catch and print the full stack trace.
-    except (Ignore if debug else kitovu.errors.KitovuError):
-        raise SystemExit('unable to create release "{}" for "{}" package'.format(tag, package))
+    except Exception:
+        if debug:
+            raise
+        else:
+            raise SystemExit('unable to create release "{}" for "{}" package'.format(tag, package))
 
 
 cli.add_command(list)

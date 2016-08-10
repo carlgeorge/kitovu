@@ -1,12 +1,11 @@
 import yaml
-from .errors import KitovuError, ConfigError, MissingConfigError
 
 
 def load_profile(profile):
     try:
         import appdirs
     except ImportError:
-        raise KitovuError('failed to import appdirs module')
+        raise SystemExit('The appdirs module is required for profile support, but could not be imported.')
     config_dir = appdirs.user_config_dir(__package__)
     config = '{}/{}.yaml'.format(config_dir, profile)
     return load_config(config)
@@ -25,6 +24,6 @@ def safe_yaml_load(path):
             try:
                 return yaml.load(f.read())
             except yaml.YAMLError:
-                raise ConfigError('{}: yaml error'.format(path))
+                raise SystemExit('{}: yaml error'.format(path))
     except FileNotFoundError:
-        raise MissingConfigError('{}: file does not exist'.format(path))
+        raise SystemExit('{}: file does not exist'.format(path))
