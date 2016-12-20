@@ -8,16 +8,16 @@ class Api():
         if profile and config:
             raise SystemExit('use either profile or config, not both')
         elif profile:
-            self.hub, self.token = load_profile(profile)
+            self.hub, token = load_profile(profile)
         elif config:
-            self.hub, self.token = load_config(config)
+            self.hub, token = load_config(config)
         else:
-            self.hub, self.token = None, None
+            self.hub, token = None, None
         if self.hub is None:
             self.hub = 'https://api.github.com'
         self.headers = {'Accept': 'application/vnd.github.v3+json'}
-        if self.token:
-            self.headers['Authorization'] = 'token {}'.format(self.token)
+        if token:
+            self.headers['Authorization'] = 'token {}'.format(token)
 
     def check(self, response):
         if not response.ok:
