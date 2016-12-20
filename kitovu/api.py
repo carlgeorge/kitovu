@@ -3,6 +3,13 @@ from .config import load_profile, load_config
 from .utils import Paging
 
 
+def ok(response):
+    if response.ok:
+        return response
+    else:
+        raise SystemExit(response.json()['message'])
+
+
 class Api():
     def __init__(self, profile=None, config=None):
         if profile and config:
@@ -19,15 +26,10 @@ class Api():
         if token:
             self.headers['Authorization'] = 'token {}'.format(token)
 
-    def check(self, response):
-        if not response.ok:
-            raise SystemExit(response.json()['message'])
-        return response
-
     def get(self, uri, **kwargs):
         endpoint = self.hub + uri
         kwargs['headers'] = self.headers
-        return self.check(requests.get(endpoint, **kwargs))
+        return ok(requests.get(endpoint, **kwargs))
 
     def get_all(self, uri, **kwargs):
         r = self.get(uri, **kwargs)
@@ -35,8 +37,7 @@ class Api():
             yield r
             paging = Paging(r.headers.get('link'))
             if paging.next_link:
-                r = self.check(requests.get(paging.next_link,
-                                            headers=self.headers))
+                r = ok(requests.get(paging.next_link, headers=self.headers))
             else:
                 break
 
@@ -44,14 +45,14 @@ class Api():
         endpoint = self.hub + uri
         kwargs['headers'] = self.headers
         kwargs['json'] = payload
-        return self.check(requests.post(endpoint, **kwargs))
+        return ok(requests.post(endpoint, **kwargs))
 
     def put(self, uri, **kwargs):
         endpoint = self.hub + uri
         kwargs['headers'] = self.headers
-        return self.check(requests.put(endpoint, **kwargs))
+        return ok(requests.put(endpoint, **kwargs))
 
     def delete(self, uri, **kwargs):
         endpoint = self.hub + uri
         kwargs['headers'] = self.headers
-        return self.check(requests.delete(endpoint, **kwargs))
+        return ok(requests.delete(endpoint, **kwargs))
