@@ -1,3 +1,4 @@
+import functools
 import requests
 from .config import load_profile, load_config
 from .utils import Paging
@@ -22,37 +23,32 @@ class Api():
             self.hub, token = None, None
         if self.hub is None:
             self.hub = 'https://api.github.com'
-        self.headers = {'Accept': 'application/vnd.github.v3+json'}
+        headers = {'Accept': 'application/vnd.github.v3+json'}
         if token:
-            self.headers['Authorization'] = 'token {}'.format(token)
+            headers['Authorization'] = 'token {}'.format(token)
+        self._get = functools.partial(requests.get, headers=headers)
+        self._put = functools.partial(requests.put, headers=headers)
+        self._post = functools.partial(requests.post, headers=headers)
+        self._delete = functools.partial(requests.delete, headers=headers)
 
-    def get(self, uri, **kwargs):
-        endpoint = self.hub + uri
-        kwargs['headers'] = self.headers
-        return ok(requests.get(endpoint, **kwargs))
+    def get(self, uri):
+        return ok(self._get(self.hub + uri))
 
-    def get_all(self, uri, **kwargs):
-        r = self.get(uri, **kwargs)
+    def get_all(self, uri):
+        r = self.get(uri)
         while True:
             yield r
             paging = Paging(r.headers.get('link'))
             if paging.next_link:
-                r = ok(requests.get(paging.next_link, headers=self.headers))
+                r = ok(self._get(paging.next_link))
             else:
                 break
 
-    def post(self, uri, payload, **kwargs):
-        endpoint = self.hub + uri
-        kwargs['headers'] = self.headers
-        kwargs['json'] = payload
-        return ok(requests.post(endpoint, **kwargs))
+    def post(self, uri, payload):
+        return ok(self._post(self.hub + uri, json=payload))
 
-    def put(self, uri, **kwargs):
-        endpoint = self.hub + uri
-        kwargs['headers'] = self.headers
-        return ok(requests.put(endpoint, **kwargs))
+    def put(self, uri):
+        return ok(self._put(self.hub + uri))
 
-    def delete(self, uri, **kwargs):
-        endpoint = self.hub + uri
-        kwargs['headers'] = self.headers
-        return ok(requests.delete(endpoint, **kwargs))
+    def delete(self, uri):
+        return ok(self._delete(self.hub + uri))
