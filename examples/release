@@ -86,7 +86,7 @@ def testing(api, tag, package, organization, timestamp, debug):
         if debug:
             click.echo('POST {}'.format(uri))
             click.echo(payload)
-        api.post(uri, payload)
+        api.post(uri, json=payload)
     except Exception:
         if debug:
             raise

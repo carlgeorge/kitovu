@@ -31,11 +31,11 @@ class Api():
         self._post = functools.partial(requests.post, headers=headers)
         self._delete = functools.partial(requests.delete, headers=headers)
 
-    def get(self, uri):
-        return ok(self._get(self.hub + uri))
+    def get(self, uri, **kwargs):
+        return ok(self._get(self.hub + uri, **kwargs))
 
-    def get_all(self, uri):
-        r = self.get(uri)
+    def get_all(self, uri, **kwargs):
+        r = self.get(uri, **kwargs)
         while True:
             yield r
             paging = Paging(r.headers.get('link'))
@@ -44,11 +44,11 @@ class Api():
             else:
                 break
 
-    def post(self, uri, payload):
-        return ok(self._post(self.hub + uri, json=payload))
+    def post(self, uri, **kwargs):
+        return ok(self._post(self.hub + uri, **kwargs))
 
-    def put(self, uri):
-        return ok(self._put(self.hub + uri))
+    def put(self, uri, **kwargs):
+        return ok(self._put(self.hub + uri, **kwargs))
 
-    def delete(self, uri):
-        return ok(self._delete(self.hub + uri))
+    def delete(self, uri, **kwargs):
+        return ok(self._delete(self.hub + uri, **kwargs))
