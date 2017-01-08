@@ -4,7 +4,7 @@ import yaml
 def load_profile(profile):
     try:
         import appdirs
-    except ImportError:
+    except ModuleNotFoundError:
         raise SystemExit('The appdirs module is required for profile support, but could not be imported.')
     config_dir = appdirs.user_config_dir('github')
     config = '{}/{}.yaml'.format(config_dir, profile)
