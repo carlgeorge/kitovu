@@ -7,7 +7,7 @@ def load_profile(profile):
     except ModuleNotFoundError:
         raise SystemExit('The appdirs module is required for profile support, but could not be imported.')
     config_dir = appdirs.user_config_dir('github')
-    config = '{}/{}.yaml'.format(config_dir, profile)
+    config = f"{config_dir}/{profile}.yaml"
     return load_config(config)
 
 
@@ -24,6 +24,6 @@ def safe_yaml_load(path):
             try:
                 return yaml.load(f.read())
             except yaml.YAMLError:
-                raise SystemExit('{}: yaml error'.format(path))
+                raise SystemExit(f"{path}: yaml error")
     except FileNotFoundError:
-        raise SystemExit('{}: file does not exist'.format(path))
+        raise SystemExit(f"{path}: file does not exist")

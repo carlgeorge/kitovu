@@ -34,10 +34,10 @@ def get(api, page_number, per_page, all_pages, summary, uri):
     if page_number or per_page:
         params = []
         if page_number:
-            params.append('page={}'.format(page_number))
+            params.append(f"page={page_number}")
         if per_page:
-            params.append('per_page={}'.format(per_page))
-        uri = '{}?{}'.format(uri, '&'.join(params))
+            params.append(f"per_page={per_page}")
+        uri = f"{uri}?{'&'.join(params)}"
     # make the call
     if all_pages:
         data = []

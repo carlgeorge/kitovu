@@ -25,7 +25,7 @@ class Api():
             self.hub = 'https://api.github.com'
         headers = {'Accept': 'application/vnd.github.v3+json'}
         if token:
-            headers['Authorization'] = 'token {}'.format(token)
+            headers['Authorization'] = f"token {token}"
         self._get = functools.partial(requests.get, headers=headers)
         self._put = functools.partial(requests.put, headers=headers)
         self._post = functools.partial(requests.post, headers=headers)
