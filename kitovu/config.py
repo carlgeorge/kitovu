@@ -22,7 +22,7 @@ def safe_yaml_load(path):
     try:
         with open(path) as f:
             try:
-                return yaml.load(f.read())
+                return yaml.load(f)
             except yaml.YAMLError:
                 raise SystemExit('{}: yaml error'.format(path))
     except FileNotFoundError:
