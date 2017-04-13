@@ -29,20 +29,14 @@ def cli(ctx):
 @click.option('-d', '--debug', is_flag=True)
 def list(api, package, organization, debug):
     '''List releases for a package.'''
-    try:
-        # GET /repos/:owner/:repo/releases
-        uri = '/repos/{}/{}/releases'.format(organization, package)
-        if debug:
-            click.echo('GET {}'.format(uri))
-        releases = api.get(uri).json()[0:3]
-        for release in releases:
-            status = 'testing' if release['prerelease'] else 'stable'
-            click.echo('{} {}'.format(release['tag_name'], status))
-    except Exception:
-        if debug:
-            raise
-        else:
-            raise SystemExit('unable to get releases for "{}" package'.format(package))
+    # GET /repos/:owner/:repo/releases
+    uri = '/repos/{}/{}/releases'.format(organization, package)
+    if debug:
+        click.echo('GET {}'.format(uri))
+    releases = api.get(uri).json()[0:3]
+    for release in releases:
+        status = 'testing' if release['prerelease'] else 'stable'
+        click.echo('{} {}'.format(release['tag_name'], status))
 
 
 @click.command()
@@ -53,20 +47,14 @@ def list(api, package, organization, debug):
 @click.option('-d', '--debug', is_flag=True)
 def show(api, tag, package, organization, debug):
     '''Display details for a release.'''
-    try:
-        # GET /repos/:owner/:repo/releases/tags/:tag
-        uri = '/repos/{}/{}/releases/tags/{}'.format(organization, package, tag)
-        if debug:
-            click.echo('GET {}'.format(uri))
-        data = api.get(uri).json()
-        click.echo('name: {}'.format(data['tag_name']))
-        click.echo('prerelease: {}'.format(data['prerelease']))
-        click.echo(data['body'])
-    except Exception:
-        if debug:
-            raise
-        else:
-            raise SystemExit('unable to get release "{}" for "{}" package'.format(tag, package))
+    # GET /repos/:owner/:repo/releases/tags/:tag
+    uri = '/repos/{}/{}/releases/tags/{}'.format(organization, package, tag)
+    if debug:
+        click.echo('GET {}'.format(uri))
+    data = api.get(uri).json()
+    click.echo('name: {}'.format(data['tag_name']))
+    click.echo('prerelease: {}'.format(data['prerelease']))
+    click.echo(data['body'])
 
 
 @click.command()
@@ -78,20 +66,14 @@ def show(api, tag, package, organization, debug):
 @click.option('-d', '--debug', is_flag=True)
 def testing(api, tag, package, organization, timestamp, debug):
     '''Create a testing release.'''
-    try:
-        # POST /repos/:owner/:repo/releases
-        body = 'testing: {}'.format(timestamp)
-        payload = {'tag_name': tag, 'name': tag, 'body': body, 'prerelease': True}
-        uri = '/repos/{}/{}/releases'.format(organization, package)
-        if debug:
-            click.echo('POST {}'.format(uri))
-            click.echo(payload)
-        api.post(uri, json=payload)
-    except Exception:
-        if debug:
-            raise
-        else:
-            raise SystemExit('unable to create release "{}" for "{}" package'.format(tag, package))
+    # POST /repos/:owner/:repo/releases
+    body = 'testing: {}'.format(timestamp)
+    payload = {'tag_name': tag, 'name': tag, 'body': body, 'prerelease': True}
+    uri = '/repos/{}/{}/releases'.format(organization, package)
+    if debug:
+        click.echo('POST {}'.format(uri))
+        click.echo(payload)
+    api.post(uri, json=payload)
 
 
 @click.command()
@@ -103,37 +85,31 @@ def testing(api, tag, package, organization, timestamp, debug):
 @click.option('-d', '--debug', is_flag=True)
 def stable(api, tag, package, organization, timestamp, debug):
     '''Create a stable release.'''
-    try:
-        # get current testing release
-        # GET /repos/:owner/:repo/releases/tags/:tag
-        uri = '/repos/{}/{}/releases/tags/{}'.format(organization, package, tag)
-        if debug:
-            click.echo('GET {}'.format(uri))
-        data = api.get(uri).json()
-        if not data['prerelease']:
-            raise SystemExit('The latest release is already marked "stable".')
-        old_body = data['body']
-        old_id = data['id']
-        # delete current testing release
-        # DELETE /repos/:owner/:repo/releases/:id
-        uri = '/repos/{}/{}/releases/{}'.format(organization, package, old_id)
-        if debug:
-            click.echo('DELETE {}'.format(uri))
-        api.delete(uri)
-        # create new stable release
-        # POST /repos/:owner/:repo/releases
-        body = '{}\nstable: {}'.format(old_body, timestamp)
-        payload = {'tag_name': tag, 'name': tag, 'body': body}
-        uri = '/repos/{}/{}/releases'.format(organization, package)
-        if debug:
-            click.echo('POST {}'.format(uri))
-            click.echo(payload)
-        api.post(uri, payload)
-    except Exception:
-        if debug:
-            raise
-        else:
-            raise SystemExit('unable to create release "{}" for "{}" package'.format(tag, package))
+    # get current testing release
+    # GET /repos/:owner/:repo/releases/tags/:tag
+    uri = '/repos/{}/{}/releases/tags/{}'.format(organization, package, tag)
+    if debug:
+        click.echo('GET {}'.format(uri))
+    data = api.get(uri).json()
+    if not data['prerelease']:
+        raise SystemExit('The latest release is already marked "stable".')
+    old_body = data['body']
+    old_id = data['id']
+    # delete current testing release
+    # DELETE /repos/:owner/:repo/releases/:id
+    uri = '/repos/{}/{}/releases/{}'.format(organization, package, old_id)
+    if debug:
+        click.echo('DELETE {}'.format(uri))
+    api.delete(uri)
+    # create new stable release
+    # POST /repos/:owner/:repo/releases
+    body = '{}\nstable: {}'.format(old_body, timestamp)
+    payload = {'tag_name': tag, 'name': tag, 'body': body}
+    uri = '/repos/{}/{}/releases'.format(organization, package)
+    if debug:
+        click.echo('POST {}'.format(uri))
+        click.echo(payload)
+    api.post(uri, payload)
 
 
 cli.add_command(list)
