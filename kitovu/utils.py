@@ -17,5 +17,3 @@ class Paging():
                     self.first_link = url
                 if name == 'rel="prev"':
                     self.prev_link = url
-
-
