@@ -47,10 +47,10 @@ def show(api, tag, package, organization):
     '''Display details for a release.'''
     # GET /repos/:owner/:repo/releases/tags/:tag
     uri = '/repos/{}/{}/releases/tags/{}'.format(organization, package, tag)
-    data = api.get(uri).json()
-    click.echo('name: {}'.format(data['tag_name']))
-    click.echo('prerelease: {}'.format(data['prerelease']))
-    click.echo(data['body'])
+    release = api.get(uri).json()
+    click.echo('name: {}'.format(release['tag_name']))
+    click.echo('prerelease: {}'.format(release['prerelease']))
+    click.echo(release['body'])
 
 
 @click.command()
@@ -87,18 +87,18 @@ def stable(api, tag, package, organization, timestamp):
     if tag:
         # GET /repos/:owner/:repo/releases/tags/:tag
         uri = '/repos/{}/{}/releases/tags/{}'.format(organization, package, tag)
-        data = api.get(uri).json()
-        if not data['prerelease']:
+        release = api.get(uri).json()
+        if not release['prerelease']:
             raise SystemExit('That release is already marked "stable".')
     else:
         # GET /repos/:owner/:repo/releases
         uri = '/repos/{}/{}/releases'.format(organization, package)
-        data = api.get(uri).json()[0]
-        tag = data['tag_name']
-        if not data['prerelease']:
+        release = api.get(uri).json()[0]
+        tag = release['tag_name']
+        if not release['prerelease']:
             raise SystemExit('The latest release is already marked "stable".')
-    old_body = data['body']
-    old_id = data['id']
+    old_body = release['body']
+    old_id = release['id']
     # delete current testing release
     # DELETE /repos/:owner/:repo/releases/:id
     uri = '/repos/{}/{}/releases/{}'.format(organization, package, old_id)
