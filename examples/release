@@ -9,6 +9,8 @@ import pathlib
 
 import click
 import kitovu
+import pathlib
+import rpm
 
 
 default_timestamp = datetime.date.isoformat(datetime.date.today())
@@ -53,12 +55,20 @@ def show(api, tag, package, organization):
 
 @click.command()
 @click.pass_obj
-@click.argument('tag')
+@click.argument('tag', required=False)
 @click.option('-p', '--package', envvar='PKG', default=default_package)
 @click.option('-o', '--organization', default='iuscommunity-pkg')
 @click.option('-t', '--timestamp', default=default_timestamp)
 def testing(api, tag, package, organization, timestamp):
     '''Create a testing release.'''
+    if not tag:
+        rpm.addMacro('dist', '%{nil}')
+        cwd = pathlib.Path.cwd()
+        spec_files = [f for f in cwd.glob('**/*.spec') if f.name.startswith(cwd.name)]
+        spec = rpm.spec(spec_files[0].as_posix())
+        version = spec.sourceHeader[rpm.RPMTAG_VERSION].decode()
+        release = spec.sourceHeader[rpm.RPMTAG_RELEASE].decode().replace('.ius', '')
+        tag = '-'.join([version, release])
     # POST /repos/:owner/:repo/releases
     body = 'testing: {}'.format(timestamp)
     payload = {'tag_name': tag, 'name': tag, 'body': body, 'prerelease': True}
@@ -68,18 +78,25 @@ def testing(api, tag, package, organization, timestamp):
 
 @click.command()
 @click.pass_obj
-@click.argument('tag')
+@click.argument('tag', required=False)
 @click.option('-p', '--package', envvar='PKG', default=default_package)
 @click.option('-o', '--organization', default='iuscommunity-pkg')
 @click.option('-t', '--timestamp', default=default_timestamp)
 def stable(api, tag, package, organization, timestamp):
     '''Create a stable release.'''
-    # get current testing release
-    # GET /repos/:owner/:repo/releases/tags/:tag
-    uri = '/repos/{}/{}/releases/tags/{}'.format(organization, package, tag)
-    data = api.get(uri).json()
-    if not data['prerelease']:
-        raise SystemExit('The latest release is already marked "stable".')
+    if tag:
+        # GET /repos/:owner/:repo/releases/tags/:tag
+        uri = '/repos/{}/{}/releases/tags/{}'.format(organization, package, tag)
+        data = api.get(uri).json()
+        if not data['prerelease']:
+            raise SystemExit('That release is already marked "stable".')
+    else:
+        # GET /repos/:owner/:repo/releases
+        uri = '/repos/{}/{}/releases'.format(organization, package)
+        data = api.get(uri).json()[0]
+        tag = data['tag_name']
+        if not data['prerelease']:
+            raise SystemExit('The latest release is already marked "stable".')
     old_body = data['body']
     old_id = data['id']
     # delete current testing release
