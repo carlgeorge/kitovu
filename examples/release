@@ -69,6 +69,7 @@ def testing(api, tag, package, organization, timestamp):
         version = spec.sourceHeader[rpm.RPMTAG_VERSION].decode()
         release = spec.sourceHeader[rpm.RPMTAG_RELEASE].decode().replace('.ius', '')
         tag = '-'.join([version, release])
+    click.confirm('Create testing release {}?'.format(tag), abort=True)
     # POST /repos/:owner/:repo/releases
     body = 'testing: {}'.format(timestamp)
     payload = {'tag_name': tag, 'name': tag, 'body': body, 'prerelease': True}
@@ -97,6 +98,7 @@ def stable(api, tag, package, organization, timestamp):
         tag = release['tag_name']
         if not release['prerelease']:
             raise SystemExit('The latest release is already marked "stable".')
+    click.confirm('Convert {} into a stable release?'.format(tag), abort=True)
     old_body = release['body']
     old_id = release['id']
     # delete current testing release
